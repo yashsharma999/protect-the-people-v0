@@ -132,7 +132,7 @@ export default function Footer() {
             </ul>
             <h4 className="font-semibold text-lg mb-3">Contact</h4>
             <p className="text-gray-400 text-sm">
-              info@ptpfoundation.org
+              info@cdu.org
             </p>
           </div>
         </div>

@@ -90,8 +90,8 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">Contact Us</h2>
               <p>
                 If you have any questions about these Terms and Conditions, please contact us at:{' '}
-                <a href="mailto:info@ptpfoundation.org" className="text-accent hover:underline">
-                  info@ptpfoundation.org
+                <a href="mailto:info@cdu.org" className="text-accent hover:underline">
+                  info@cdu.org
                 </a>
               </p>
             </div>

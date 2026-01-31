@@ -10,34 +10,6 @@ import TeamMember from '@/components/TeamMember';
 import DonorLogos from '@/components/DonorLogos';
 import LatestUpdates from '@/components/LatestUpdates';
 
-const principles = [
-  {
-    number: '01',
-    title: 'Value localized solutions',
-    description: 'by engaging local resources, wisdom, and efforts.',
-  },
-  {
-    number: '02',
-    title: 'Improve before we Change',
-    description: 'always value and explore the potential of what the world already has, focusing on circularity – material, people, relationships, talent or resources.',
-  },
-  {
-    number: '03',
-    title: 'Value collaboration',
-    description: 'in every sphere to increase effectiveness and scale.',
-  },
-  {
-    number: '04',
-    title: 'See every entity as a stakeholder',
-    description: 'in the process of development.',
-  },
-  {
-    number: '05',
-    title: 'Focus on the missed-out',
-    description: 'people, material, needs, issues, geographies and relationships.',
-  },
-];
-
 const programCategories = [
   {
     title: 'Education Support Programs',
@@ -69,6 +41,17 @@ const professionalServices = [
   {
     title: 'Finance Advisor',
     description: 'A finance advisor provides professional guidance on financial planning, investments, budgeting, and wealth management to help clients achieve their financial goals.',
+  },
+];
+
+const foodAndJustice = [
+  {
+    title: 'Food for needy people',
+    description: 'As part of Protect the People Foundation, we strive to secure a hunger-free future for children in India by providing nutritious meals, fostering health, and nourishing the potential of every child.',
+  },
+  {
+    title: 'Human rights in India',
+    description: 'Championing human rights in India, Protect the People Foundation stands dedicated to ensuring dignity, and justice for all, fostering a society where every individual\'s rights are respected and protected.',
   },
 ];
 
@@ -117,187 +100,139 @@ export default function ProgramsPage() {
         subtitle="Empowering communities through sustainable programs and initiatives"
       />
 
-      {/* Values & Guiding Principles Section */}
+      {/* Section 1: Image Left / Text Right — Education, Healthcare & Support */}
       <AnimatedSection className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            <div className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
+            >
               <Image
-                src="https://images.unsplash.com/photo-1594708767771-a7502f8ab28a?w=800&h=1000&fit=crop"
-                alt="Values and Guiding Principles"
+                src="https://images.unsplash.com/photo-1497375638960-ca368c7231e4?w=800&h=1000&fit=crop"
+                alt="Education and community support programs"
                 fill
                 className="object-cover"
               />
-            </div>
-            <div className="lg:pl-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
-                Values & Guiding Principles
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-8">
+                Empowering Communities Through Education, Healthcare & Support
               </h2>
-              <p className="text-secondary mb-8">
-                Human dignity and the world&apos;s surplus are at the core of our idea, ensuring that our actions never undermine the dignity of self, those we work with, and, most importantly, those we stand with. Besides that, we:
-              </p>
               <div className="space-y-6">
-                {principles.map((principle) => (
-                  <div key={principle.number} className="flex gap-4">
-                    <span className="text-accent font-bold">{principle.number}.</span>
-                    <p className="text-secondary">
-                      <span className="text-primary font-medium">{principle.title}</span> {principle.description}
-                    </p>
+                {programCategories.map((item) => (
+                  <div key={item.title}>
+                    <h3 className="text-xl font-bold text-primary mb-2">{item.title}</h3>
+                    <p className="text-secondary">{item.description}</p>
                   </div>
                 ))}
               </div>
               <Link
-                href="/about-us"
-                className="inline-block mt-8 border border-[#222120] text-primary px-6 py-3 rounded-full hover:bg-primary hover:text-white transition-colors"
+                href="/how-to-help"
+                className="inline-block mt-8 bg-primary text-white px-8 py-4 rounded-full hover:bg-[#333] transition-colors"
               >
-                Read More
+                Support Us
               </Link>
-            </div>
+            </motion.div>
           </div>
         </div>
       </AnimatedSection>
 
-      {/* Program Categories Section */}
-      <AnimatedSection className="py-24 bg-muted">
+      {/* Section 2: Text Left / Image Right — Professional Services */}
+      <AnimatedSection className="py-24 bg-[#f5f5f5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-primary mb-12 text-center"
-          >
-            Empowering Communities Through Education, Healthcare & Support
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {programCategories.map((program, index) => (
-              <motion.div
-                key={program.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 shadow-sm"
-              >
-                <h3 className="text-xl font-bold text-primary mb-4">{program.title}</h3>
-                <p className="text-secondary">{program.description}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link
-              href="/how-to-help"
-              className="inline-block bg-primary text-white px-8 py-4 rounded-full hover:bg-[#333] transition-colors"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
-              Support Us
-            </Link>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* Food & Justice Section */}
-      <AnimatedSection className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
-                Our battle against hunger is humanity&apos;s war for equality
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-8">
+                Professional Legal, Tax, and Financial Advisory Services
               </h2>
-              <p className="text-secondary mb-4">
-                A country cannot progress if most of its people are hungry. Today, 14% of our population is undernourished and needs our undivided attention. The only way to ensure a healthy and happy country is by nourishing the ones who need it the most. Annamrita Foundation is an NGO working with an aim to provide food relief and nourishment to the underprivileged communities of India.
-              </p>
-              <p className="text-secondary mb-6">
-                Your charity in the form of generous donations can help Annamrita provide nutritious mid-day meals and food relief to the children and underprivileged sections of our society.
-              </p>
+              <div className="space-y-6">
+                {professionalServices.map((item) => (
+                  <div key={item.title}>
+                    <h3 className="text-xl font-bold text-primary mb-2">{item.title}</h3>
+                    <p className="text-secondary">{item.description}</p>
+                  </div>
+                ))}
+              </div>
               <Link
                 href="/how-to-help"
-                className="inline-block bg-primary text-white px-6 py-3 rounded hover:bg-primary-hover transition-colors"
+                className="inline-block mt-8 bg-primary text-white px-8 py-4 rounded-full hover:bg-[#333] transition-colors"
               >
-                Know More
+                Support Us
               </Link>
-            </div>
-            <div className="relative h-[400px] rounded-2xl overflow-hidden">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
+            >
               <Image
                 src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&h=600&fit=crop"
-                alt="Food Distribution"
+                alt="Professional advisory services"
                 fill
                 className="object-cover"
               />
-            </div>
+            </motion.div>
           </div>
         </div>
       </AnimatedSection>
 
-      {/* Professional Services Section */}
-      <AnimatedSection className="py-24 bg-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-primary mb-12 text-center"
-          >
-            Professional Legal, Tax, and Financial Advisory Services
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {professionalServices.map((service, index) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 shadow-sm"
-              >
-                <h3 className="text-xl font-bold text-primary mb-4">{service.title}</h3>
-                <p className="text-secondary">{service.description}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link
-              href="/how-to-help"
-              className="inline-block bg-primary text-white px-8 py-4 rounded-full hover:bg-[#333] transition-colors"
-            >
-              Support Us
-            </Link>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* Food & Human Rights Section */}
+      {/* Section 3: Image Left / Text Right — Food & Human Rights */}
       <AnimatedSection className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-primary mb-12 text-center"
-          >
-            Empowering Lives Through Food and Justice
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-muted rounded-2xl p-8"
+              transition={{ duration: 0.6 }}
+              className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
             >
-              <h3 className="text-xl font-bold text-primary mb-4">Food for needy people</h3>
-              <p className="text-secondary">
-                As part of Protect the People Foundation, we strive to secure a hunger-free future for children in India by providing nutritious meals, fostering health, and nourishing the potential of every child.
-              </p>
+              <Image
+                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&h=1000&fit=crop"
+                alt="Food and human rights initiatives"
+                fill
+                className="object-cover"
+              />
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-muted rounded-2xl p-8"
+              transition={{ duration: 0.6 }}
             >
-              <h3 className="text-xl font-bold text-primary mb-4">Human rights in India</h3>
-              <p className="text-secondary">
-                Championing human rights in India, Protect the People Foundation stands dedicated to ensuring dignity, and justice for all, fostering a society where every individual&apos;s rights are respected and protected.
-              </p>
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-8">
+                Empowering Lives Through Food and Justice
+              </h2>
+              <div className="space-y-6">
+                {foodAndJustice.map((item) => (
+                  <div key={item.title}>
+                    <h3 className="text-xl font-bold text-primary mb-2">{item.title}</h3>
+                    <p className="text-secondary">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+              <Link
+                href="/how-to-help"
+                className="inline-block mt-8 bg-primary text-white px-8 py-4 rounded-full hover:bg-[#333] transition-colors"
+              >
+                Support Us
+              </Link>
             </motion.div>
           </div>
         </div>

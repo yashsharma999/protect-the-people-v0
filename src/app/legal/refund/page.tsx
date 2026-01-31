@@ -75,7 +75,7 @@ export default function RefundPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">How to Request a Refund</h2>
               <p className="mb-4">To request a refund, please:</p>
               <ol className="list-decimal pl-6 mb-6 space-y-2">
-                <li>Email us at <a href="mailto:info@ptpfoundation.org" className="text-accent hover:underline">info@ptpfoundation.org</a></li>
+                <li>Email us at <a href="mailto:info@cdu.org" className="text-accent hover:underline">info@cdu.org</a></li>
                 <li>Include your name, donation date, and donation amount</li>
                 <li>Provide the reason for your refund request</li>
                 <li>Include any relevant transaction or receipt numbers</li>
@@ -91,8 +91,8 @@ export default function RefundPolicyPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">Contact Us</h2>
               <p>
                 If you have any questions about our Refund Policy, please contact us at:{' '}
-                <a href="mailto:info@ptpfoundation.org" className="text-accent hover:underline">
-                  info@ptpfoundation.org
+                <a href="mailto:info@cdu.org" className="text-accent hover:underline">
+                  info@cdu.org
                 </a>
               </p>
             </div>

@@ -104,8 +104,8 @@ export default function TaxInfoPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">Contact Us</h2>
               <p>
                 For any queries regarding tax exemption or registration, please contact us at:{' '}
-                <a href="mailto:info@ptpfoundation.org" className="text-accent hover:underline">
-                  info@ptpfoundation.org
+                <a href="mailto:info@cdu.org" className="text-accent hover:underline">
+                  info@cdu.org
                 </a>
               </p>
             </div>

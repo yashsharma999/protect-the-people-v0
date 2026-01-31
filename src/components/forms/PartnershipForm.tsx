@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import { Handshake, CheckCircle, Loader2 } from 'lucide-react';
+import { Handshake, Loader2 } from 'lucide-react';
 
 interface PartnershipFormData {
   organizationName: string;
@@ -15,49 +15,33 @@ interface PartnershipFormData {
 }
 
 export default function PartnershipForm() {
+  const router = useRouter();
+  const [submitError, setSubmitError] = useState<string>('');
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: { errors, isSubmitting },
   } = useForm<PartnershipFormData>();
 
   const onSubmit = async (data: PartnershipFormData) => {
-    const response = await fetch('/api/partnership', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    try {
+      setSubmitError('');
+      const response = await fetch('/api/partnership', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to submit inquiry');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to submit inquiry');
+      }
+
+      router.push('/thank-you?type=partner');
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     }
   };
-
-  if (isSubmitSuccessful) {
-    return (
-      <div className="text-center py-12">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', duration: 0.5 }}
-          className="w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6"
-        >
-          <CheckCircle className="w-12 h-12 text-emerald-600" />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h3 className="text-2xl font-bold mb-3 text-emerald-700">Inquiry Received!</h3>
-          <p className="text-secondary mb-6 max-w-md mx-auto">
-            Thank you for your interest in partnering with us. Our partnerships team will review your inquiry and get back to you within 2-3 business days.
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -65,6 +49,12 @@ export default function PartnershipForm() {
       <p className="text-secondary text-lg leading-relaxed mb-8">
         We collaborate with corporates, institutions, and individuals to scale impact through CSR initiatives and long-term partnerships.
       </p>
+
+      {submitError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          {submitError}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Organization Details */}

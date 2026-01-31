@@ -1,28 +1,46 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
 
+interface ContactFormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
+  const router = useRouter();
+  const [submitError, setSubmitError] = useState<string>('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactFormData>();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Form submission is visual only - no backend
-    alert('Thank you for your message. This is a demo - no message was sent.');
-  };
+  const onSubmit = async (data: ContactFormData) => {
+    try {
+      setSubmitError('');
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to send message');
+      }
+
+      router.push('/thank-you?type=contact');
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -69,7 +87,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-[#222120] mb-1">Email</h3>
-                    <p className="text-[#8D8B9C]">info@genocideedu.org</p>
+                    <p className="text-[#8D8B9C]">info@cdu.org</p>
                   </div>
                 </div>
 
@@ -82,7 +100,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-[#222120] mb-1">Location</h3>
-                    <p className="text-[#8D8B9C]">Operating in Northern Iraq and globally</p>
+                    <p className="text-[#8D8B9C]">Operating out of Uttar Pradesh, India</p>
                   </div>
                 </div>
 
@@ -126,49 +144,59 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="bg-[#f5f5f5] rounded-2xl p-8 md:p-12">
               <h3 className="text-2xl font-bold text-[#222120] mb-8">Send a Message</h3>
-              <form onSubmit={handleSubmit} className="space-y-6">
+
+              {submitError && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                  {submitError}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-[#222120] mb-2">
-                    Your Name
+                    Your Name *
                   </label>
                   <input
                     type="text"
                     id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
+                    {...register('name', { required: 'Name is required' })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#222120] focus:ring-1 focus:ring-[#222120] outline-none transition-colors"
                     placeholder="John Doe"
                   />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                  )}
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-[#222120] mb-2">
-                    Email Address
+                    Email Address *
                   </label>
                   <input
                     type="email"
                     id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
+                    {...register('email', {
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Invalid email address',
+                      },
+                    })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#222120] focus:ring-1 focus:ring-[#222120] outline-none transition-colors"
                     placeholder="john@example.com"
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                  )}
                 </div>
 
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-[#222120] mb-2">
-                    Subject
+                    Subject *
                   </label>
                   <select
                     id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
+                    {...register('subject', { required: 'Please select a subject' })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#222120] focus:ring-1 focus:ring-[#222120] outline-none transition-colors bg-white"
                   >
                     <option value="">Select a subject</option>
@@ -178,29 +206,43 @@ export default function ContactPage() {
                     <option value="media">Media Inquiry</option>
                     <option value="other">Other</option>
                   </select>
+                  {errors.subject && (
+                    <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>
+                  )}
                 </div>
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-[#222120] mb-2">
-                    Message
+                    Message *
                   </label>
                   <textarea
                     id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
+                    {...register('message', {
+                      required: 'Message is required',
+                      minLength: { value: 10, message: 'Please write at least 10 characters' },
+                    })}
                     rows={5}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#222120] focus:ring-1 focus:ring-[#222120] outline-none transition-colors resize-none"
                     placeholder="How can we help you?"
                   />
+                  {errors.message && (
+                    <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-[#222120] text-white py-4 rounded-full font-semibold hover:bg-[#333] transition-colors"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#222120] text-white py-4 rounded-full font-semibold hover:bg-[#333] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Send Message
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Message'
+                  )}
                 </button>
               </form>
             </div>
