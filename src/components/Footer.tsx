@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -8,9 +9,7 @@ export default function Footer() {
           {/* Logo & Description */}
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <span className="text-[#222120] font-bold text-lg">P</span>
-              </div>
+              <Image src="/logo.png" alt="PTP Foundation" width={48} height={48} className="object-contain" />
               <span className="text-xl font-semibold">PTP Foundation</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed max-w-md mb-6">

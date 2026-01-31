@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import AnimatedSection from '@/components/AnimatedSection';
 import AnimatedCard from '@/components/AnimatedCard';
 import CountUp from '@/components/CountUp';
+import donors from '@/data/donors';
 
 // Hero Section
 function HeroSection() {
@@ -54,10 +55,10 @@ function HeroSection() {
             Donate Now
           </Link>
           <Link
-            href="/how-to-help"
+            href="/how-to-help#partnerships"
             className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-colors"
           >
-            Get Involved
+            Partner With Us
           </Link>
         </motion.div>
       </div>
@@ -90,9 +91,6 @@ function WhoWeAreSection() {
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Who We Are</h2>
             <div className="space-y-4 text-secondary text-lg leading-relaxed">
-              <p>
-                <strong className="text-primary">Sudan&apos;s unrelenting conflict has set off the world&apos;s largest and worst hunger crisis.</strong> Famine has been confirmed in multiple areas and could spread even further if we do not act immediately. <span className="font-semibold text-primary">Famine means people are dying from hunger.</span> Children, families, and communities are suffering — and they need our support now.
-              </p>
               <p>
                 PTP Foundation is a purpose-driven nonprofit organization dedicated to addressing real-world challenges faced by underserved and vulnerable communities. We operate with a clear belief that social change must be inclusive, transparent, and sustainable to create meaningful results.
               </p>
@@ -160,10 +158,10 @@ function MissionSection() {
               Through consistent efforts, partnerships, and responsible fund utilization, we aim to create social change that lasts beyond immediate intervention.
             </p>
             <Link
-              href="/how-to-help"
+              href="/our-work"
               className="inline-block bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-hover transition-colors"
             >
-              Donate Now
+              Our Program
             </Link>
           </div>
           <div className="relative h-[500px] rounded-2xl overflow-hidden">
@@ -223,9 +221,15 @@ function VisionSection() {
                 <span className="text-secondary">Social support systems are inclusive and compassionate</span>
               </li>
             </ul>
-            <p className="text-secondary text-lg leading-relaxed">
+            <p className="text-secondary text-lg leading-relaxed mb-8">
               Our vision extends beyond short-term goals. We work toward systemic improvements that continue to benefit communities long after programs are completed.
             </p>
+            <Link
+              href="/our-stories"
+              className="inline-block bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-hover transition-colors"
+            >
+              Impact and Stories
+            </Link>
           </div>
         </div>
       </div>
@@ -323,6 +327,15 @@ function FocusAreasSection() {
             </AnimatedCard>
           ))}
         </div>
+
+        <div className="text-center mt-12">
+          <Link
+            href="/events"
+            className="inline-block bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-hover transition-colors"
+          >
+            Our Events
+          </Link>
+        </div>
       </div>
     </AnimatedSection>
   );
@@ -358,9 +371,15 @@ function ApproachSection() {
             ))}
           </ul>
         </div>
-        <p className="text-secondary text-lg leading-relaxed mt-8">
+        <p className="text-secondary text-lg leading-relaxed mt-8 mb-8">
           This structured methodology allows us to continuously improve and deliver responsible social impact.
         </p>
+        <Link
+          href="/reports"
+          className="inline-block bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-hover transition-colors"
+        >
+          Reports
+        </Link>
       </div>
     </AnimatedSection>
   );
@@ -432,9 +451,14 @@ function ImpactSection() {
             </motion.div>
           ))}
         </div>
-        <p className="text-center text-gray-400 text-sm mt-12">
-          (Impact metrics will be updated as programs expand and new milestones are achieved.)
-        </p>
+        <div className="text-center mt-12">
+          <Link
+            href="/how-to-help#volunteer"
+            className="inline-block bg-white text-primary px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors"
+          >
+            Be a Volunteer
+          </Link>
+        </div>
       </div>
     </AnimatedSection>
   );
@@ -442,14 +466,6 @@ function ImpactSection() {
 
 // Our Donors Section
 function DonorsSection() {
-  const donors = [
-    { name: 'Bhagwati', placeholder: true },
-    { name: 'TDI', placeholder: true },
-    { name: 'Mohindra', placeholder: true },
-    { name: 'Organic Medical', placeholder: true },
-    { name: 'Ayur Herbal', placeholder: true },
-  ];
-
   return (
     <AnimatedSection className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -469,7 +485,18 @@ function DonorsSection() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="w-32 h-16 bg-gray-100 rounded-lg flex items-center justify-center"
             >
-              <span className="text-secondary text-sm font-medium">{donor.name}</span>
+              {donor.logo ? (
+                <div className="relative w-24 h-12">
+                  <Image
+                    src={donor.logo}
+                    alt={donor.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              ) : (
+                <span className="text-secondary text-sm font-medium">{donor.name}</span>
+              )}
             </motion.div>
           ))}
         </div>
@@ -492,9 +519,15 @@ function VideoSection() {
             <p className="text-secondary text-lg leading-relaxed mb-6">
               The only way to ensure a healthy and happy community is by nourishing the ones who need it the most. PTP Foundation is working with an aim to provide food relief and nourishment to underprivileged communities.
             </p>
-            <p className="text-secondary text-lg leading-relaxed">
+            <p className="text-secondary text-lg leading-relaxed mb-8">
               Your charity in the form of generous donations can help us provide nutritious mid-day meals and food relief to children and underprivileged sections of our society.
             </p>
+            <Link
+              href="/how-to-help"
+              className="inline-block bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-hover transition-colors"
+            >
+              Donate Now
+            </Link>
           </div>
           <div className="relative aspect-video rounded-2xl overflow-hidden bg-primary">
             {/* Video Placeholder - Replace with actual video embed */}
@@ -545,9 +578,23 @@ function WhySupportSection() {
                 </li>
               ))}
             </ul>
-            <p className="text-secondary text-lg leading-relaxed">
+            <p className="text-secondary text-lg leading-relaxed mb-8">
               We prioritize donor trust and accountability because we understand that generosity deserves respect and responsibility.
             </p>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/how-to-help#volunteer"
+                className="inline-block bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-hover transition-colors"
+              >
+                Be a Volunteer
+              </Link>
+              <Link
+                href="/reports"
+                className="inline-block border-2 border-primary text-primary px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+              >
+                Reports
+              </Link>
+            </div>
           </div>
           <div className="relative h-[500px] rounded-2xl overflow-hidden">
             <Image
@@ -558,42 +605,6 @@ function WhySupportSection() {
             />
           </div>
         </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-// Transparency Section
-function TransparencySection() {
-  const points = [
-    'Clear documentation of programs and initiatives',
-    'Responsible financial management',
-    'Ethical partnerships and collaborations',
-    'Honest communication with donors and stakeholders',
-  ];
-
-  return (
-    <AnimatedSection className="py-24 bg-muted">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Transparency & Accountability</h2>
-        <p className="text-secondary text-lg leading-relaxed mb-8">
-          We believe trust is the foundation of any nonprofit organization. That&apos;s why we ensure:
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {points.map((point, index) => (
-            <div key={index} className="bg-white rounded-xl p-6 text-left">
-              <div className="flex items-start">
-                <svg className="w-6 h-6 text-primary mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span className="text-secondary">{point}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <p className="text-secondary text-lg leading-relaxed mt-8">
-          Our commitment to transparency builds long-term relationships with supporters who share our values.
-        </p>
       </div>
     </AnimatedSection>
   );
@@ -892,10 +903,10 @@ function CTABannerSection() {
             Donate Now
           </Link>
           <Link
-            href="/how-to-help"
+            href="/how-to-help#partnerships"
             className="border-2 border-primary text-primary px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-colors"
           >
-            Get Involved
+            Partner With Us
           </Link>
         </motion.div>
       </div>
@@ -917,7 +928,6 @@ export default function Home() {
       <DonorsSection />
       <VideoSection />
       <WhySupportSection />
-      <TransparencySection />
       <HelpSection />
       <BlogsSection />
       <ActivitiesSection />

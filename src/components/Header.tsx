@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DropdownItem {
@@ -191,9 +192,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-[#222120] rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
+            <Image src="/logo.png" alt="PTP Foundation" width={48} height={48} />
             <span className="text-xl font-semibold text-[#222120] hidden sm:block">
               PTP Foundation
             </span>

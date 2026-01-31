@@ -2,14 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-
-const donors = [
-  { name: 'Bhagwati', logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=80&fit=crop' },
-  { name: 'TDI', logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=80&fit=crop' },
-  { name: 'Mohindra', logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=80&fit=crop' },
-  { name: 'Begonia Medical', logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=80&fit=crop' },
-  { name: 'Ayur', logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=80&fit=crop' },
-];
+import donors from '@/data/donors';
 
 export default function DonorLogos() {
   return (
@@ -35,19 +28,25 @@ export default function DonorLogos() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="flex flex-wrap justify-center items-center gap-8 md:gap-16"
         >
-          {donors.map((donor, index) => (
+          {donors.map((donor) => (
             <div
               key={donor.name}
               className="grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100"
             >
-              <div className="relative w-24 h-12 md:w-32 md:h-16">
-                <Image
-                  src={donor.logo}
-                  alt={donor.name}
-                  fill
-                  className="object-contain"
-                />
-              </div>
+              {donor.logo ? (
+                <div className="relative w-24 h-12 md:w-32 md:h-16">
+                  <Image
+                    src={donor.logo}
+                    alt={donor.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="w-24 h-12 md:w-32 md:h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <span className="text-secondary text-sm font-medium">{donor.name}</span>
+                </div>
+              )}
             </div>
           ))}
         </motion.div>
