@@ -14,6 +14,10 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "PTP Foundation - Building Hope, Creating Impact, Transforming Lives",
   description: "PTP Foundation works to create lasting social change by strengthening access to education, healthcare, and community support for underserved communities. Our focus is on long-term impact, transparency, and real transformation at the grassroots level.",
+  openGraph: {
+    title: "PTP Foundation - Building Hope, Creating Impact, Transforming Lives",
+    description: "PTP Foundation works to create lasting social change by strengthening access to education, healthcare, and community support for underserved communities.",
+  },
 };
 
 export default function RootLayout({

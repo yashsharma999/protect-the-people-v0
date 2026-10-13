@@ -1,0 +1,6 @@
+{
+  "name": "PTP Foundation",
+  "description": "PTP Foundation works to create lasting social change by strengthening access to education, healthcare, and community support for underserved communities.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

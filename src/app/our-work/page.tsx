@@ -58,17 +58,17 @@ const foodAndJustice = [
 const stories = [
   {
     name: 'Debasmita',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&fit=crop',
+    image: '/images/story-debasmita-v2.jpg',
     excerpt: "In the slum where I live, many parents are worried about their children's education.",
   },
   {
     name: 'Lavanaya',
-    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=800&fit=crop',
+    image: '/images/story-lavanaya-v2.jpg',
     excerpt: 'Some people say I am unlucky. My father went away when I was born, and later my mother died in an accident.',
   },
   {
     name: 'Neha',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop',
+    image: '/images/beneficiary-neha.jpg',
     excerpt: 'My father used to sell vegetables, but during the pandemic everything closed down.',
   },
 ];
@@ -77,17 +77,17 @@ const teamMembers = [
   {
     name: 'Sarang Bobade',
     role: 'CEO & Co-Founder',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+    image: '/images/team-sarang.jpg',
   },
   {
     name: 'Anil Kumar Reddy',
     role: 'Co-Founder',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop',
+    image: '/images/team-anil.jpg',
   },
   {
     name: 'Sandeep Sharma',
     role: 'Co-Founder',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop',
+    image: '/images/team-sandeep.jpg',
   },
 ];
 
@@ -112,8 +112,8 @@ export default function ProgramsPage() {
               className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1497375638960-ca368c7231e4?w=800&h=1000&fit=crop"
-                alt="Education and community support programs"
+                src="/images/empowering-education.jpg"
+                alt="Education and community support programs for Indian students"
                 fill
                 className="object-cover"
               />
@@ -182,8 +182,8 @@ export default function ProgramsPage() {
               className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&h=600&fit=crop"
-                alt="Professional advisory services"
+                src="/images/volunteers-community.jpg"
+                alt="Community volunteers and advisory collaboration"
                 fill
                 className="object-cover"
               />
@@ -204,8 +204,8 @@ export default function ProgramsPage() {
               className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&h=1000&fit=crop"
-                alt="Food and human rights initiatives"
+                src="/images/nutrition-meal.jpg"
+                alt="Nutritional food support and children welfare"
                 fill
                 className="object-cover"
               />

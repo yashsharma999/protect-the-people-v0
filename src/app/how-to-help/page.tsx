@@ -15,17 +15,17 @@ const teamMembers = [
   {
     name: 'Sarang Bobade',
     role: 'CEO & Co-Founder',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80',
+    image: '/images/team-sarang.jpg',
   },
   {
     name: 'Anil Kumar Reddy',
     role: 'Co-Founder',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80',
+    image: '/images/team-anil.jpg',
   },
   {
     name: 'Sandeep Sharma',
     role: 'Co-Founder',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
+    image: '/images/team-sandeep.jpg',
   },
 ];
 
@@ -41,17 +41,17 @@ const latestUpdates = [
   {
     title: 'Best Physiotherapists in Rohini',
     description: 'Get expert physiotherapy treatment in Rohini for pain relief, injury recovery, and rehabilitation.',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80',
+    image: '/images/healthcare-doctor.jpg',
   },
   {
     title: 'First Step Toward Animal Welfare',
     description: 'Discover how Saviour Foundation is taking its first step toward animal welfare – rescuing stray & injured animals.',
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80',
+    image: '/images/animal-welfare.jpg',
   },
   {
     title: 'Water Brings Happiness and Prosperity',
     description: 'Clean water means fewer illnesses, better education, and stronger communities. Safe Water, Safe Lives.',
-    image: 'https://images.unsplash.com/photo-1541544741600-7d91f43f9292?w=600&q=80',
+    image: '/images/clean-water.jpg',
   },
 ];
 
@@ -139,8 +139,8 @@ export default function GetInvolvedPage() {
             </div>
             <div className="relative h-[500px] lg:h-[700px] rounded-2xl overflow-hidden lg:sticky lg:top-32">
               <Image
-                src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800&q=80"
-                alt="Helping hands"
+                src="/images/child-education.jpg"
+                alt="Empowering Indian children through education"
                 fill
                 className="object-cover"
               />
@@ -155,8 +155,8 @@ export default function GetInvolvedPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div className="order-2 lg:order-1 relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden lg:sticky lg:top-32">
               <Image
-                src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&q=80"
-                alt="Volunteers working together"
+                src="/images/volunteers-community.jpg"
+                alt="Indian volunteers working together"
                 fill
                 className="object-cover"
               />
@@ -181,8 +181,8 @@ export default function GetInvolvedPage() {
             </div>
             <div className="relative h-[500px] lg:h-[650px] rounded-2xl overflow-hidden lg:sticky lg:top-32">
               <Image
-                src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&q=80"
-                alt="Business partnership"
+                src="/images/team-sarang.jpg"
+                alt="Professional partnership and collaboration"
                 fill
                 className="object-cover"
               />

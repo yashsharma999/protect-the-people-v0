@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedSection from '@/components/AnimatedSection';
 import AnimatedCard from '@/components/AnimatedCard';
-import CountUp from '@/components/CountUp';
 import donors from '@/data/donors';
 
 // Hero Section
@@ -15,8 +14,8 @@ function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1920&q=80"
-          alt="Community support"
+          src="/images/hero-children.jpg"
+          alt="Indian school children smiling and learning"
           fill
           className="object-cover"
           priority
@@ -104,8 +103,8 @@ function WhoWeAreSection() {
           </div>
           <div className="relative h-[500px] rounded-2xl overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?w=800&q=80"
-              alt="Community gathering"
+              src="/images/child-education.jpg"
+              alt="Indian children receiving education support"
               fill
               className="object-cover"
             />
@@ -166,8 +165,8 @@ function MissionSection() {
           </div>
           <div className="relative h-[500px] rounded-2xl overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800&q=80"
-              alt="Education support"
+              src="/images/empowering-education.jpg"
+              alt="Indian students in school classroom"
               fill
               className="object-cover"
             />
@@ -186,8 +185,8 @@ function VisionSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1 relative h-[500px] rounded-2xl overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=800&q=80"
-              alt="Children learning"
+              src="/images/students-studying.jpg"
+              alt="Indian children studying together"
               fill
               className="object-cover"
             />
@@ -598,8 +597,8 @@ function WhySupportSection() {
           </div>
           <div className="relative h-[500px] rounded-2xl overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&q=80"
-              alt="Volunteers helping"
+              src="/images/volunteers-community.jpg"
+              alt="Indian community volunteers helping"
               fill
               className="object-cover"
             />
@@ -681,19 +680,19 @@ function HelpSection() {
 function BlogsSection() {
   const blogs = [
     {
-      image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80',
+      image: '/images/empowering-education.jpg',
       category: 'Education',
       title: 'How Education Transforms Communities',
       date: 'January 10, 2026',
     },
     {
-      image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80',
+      image: '/images/healthcare-doctor.jpg',
       category: 'Healthcare',
       title: 'Building Healthier Futures Together',
       date: 'January 5, 2026',
     },
     {
-      image: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800&q=80',
+      image: '/images/volunteers-community.jpg',
       category: 'Community',
       title: 'Stories of Resilience and Hope',
       date: 'December 28, 2025',
@@ -764,19 +763,28 @@ function ActivitiesSection() {
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Working Every Day to Bring Dignity, Opportunity, and Hope to Those in Need</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Activity Image Placeholders */}
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+          {/* Activity Image Gallery */}
+          {[
+            { src: '/images/hero-children.jpg', alt: 'Indian school children learning outdoors' },
+            { src: '/images/students-studying.jpg', alt: 'Indian students studying with notebooks' },
+            { src: '/images/children-activity.jpg', alt: 'Indian classroom activities and learning' },
+            { src: '/images/child-education.jpg', alt: 'Empowering children through education' },
+            { src: '/images/education-reading.jpg', alt: 'Indian students reading and library session' },
+            { src: '/images/volunteers-community.jpg', alt: 'Community volunteers working together' },
+            { src: '/images/healthcare-doctor.jpg', alt: 'Free medical health outreach camp in India' },
+            { src: '/images/child-portrait.jpg', alt: 'Smiling child supported by foundation programs' },
+          ].map((item, index) => (
             <motion.div
-              key={item}
+              key={index}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: item * 0.05 }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
               className="relative aspect-square rounded-lg overflow-hidden bg-gray-100"
             >
               <Image
-                src={`https://images.unsplash.com/photo-${item === 1 ? '1488521787991-ed7bbaae773c' : item === 2 ? '1509099836639-18ba1795216d' : item === 3 ? '1544717305-2782549b5136' : item === 4 ? '1531206715517-5c0ba140b2b8' : item === 5 ? '1469571486292-0ba58a3f068b' : item === 6 ? '1559027615-cd4628902d4a' : item === 7 ? '1576091160550-2173dba999ef' : '1503676260728-1c00da094a0b'}?w=400&q=80`}
-                alt={`Activity ${item}`}
+                src={item.src}
+                alt={item.alt}
                 fill
                 className="object-cover hover:scale-110 transition-transform duration-500"
               />

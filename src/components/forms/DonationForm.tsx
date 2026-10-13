@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { Heart, CheckCircle, XCircle, CreditCard, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, CreditCard, Loader2 } from 'lucide-react';
 
 // Declare PhonePe checkout global
 declare global {

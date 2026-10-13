@@ -195,7 +195,7 @@ export default function VolunteerForm() {
         </button>
 
         <p className="text-center text-sm text-secondary">
-          We'll review your application and contact you within 1-2 business days.
+          We&apos;ll review your application and contact you within 1-2 business days.
         </p>
       </form>
     </div>

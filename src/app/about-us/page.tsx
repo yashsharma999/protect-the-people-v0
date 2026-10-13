@@ -12,20 +12,17 @@ const teamMembers = [
   {
     name: "Sarang Bobade",
     role: "CEO & Co-Founder",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
+    image: "/images/team-sarang.jpg",
   },
   {
     name: "Anil Kumar Reddy",
     role: "Co-Founder",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80",
+    image: "/images/team-anil.jpg",
   },
   {
     name: "Sandeep Sharma",
     role: "Co-Founder",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+    image: "/images/team-sandeep.jpg",
   },
 ];
 
@@ -34,22 +31,19 @@ const stories = [
     title: "Best Physiotherapists in Rohini",
     description:
       "Get expert physiotherapy treatment in Rohini for pain relief, injury recovery, and rehabilitation. Certified physiotherapists and home-visit support available.",
-    image:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80",
+    image: "/images/healthcare-doctor.jpg",
   },
   {
     title: "First Step Toward Animal Welfare Through Saviour Foundation",
     description:
       "Discover how Saviour Foundation is taking its first step toward animal welfare — rescuing stray & injured animals, providing medical care and shelter.",
-    image:
-      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80",
+    image: "/images/animal-welfare.jpg",
   },
   {
     title: "Water Bring Happiness and Prosperity",
     description:
       "Clean water means fewer illnesses, better education, and stronger communities. With your support, Safe Water, Safe Lives.",
-    image:
-      "https://images.unsplash.com/photo-1541544537156-7627a7a4aa1c?w=600&q=80",
+    image: "/images/clean-water.jpg",
   },
 ];
 
@@ -92,8 +86,8 @@ export default function AboutPage() {
               className="relative h-[450px] lg:h-[550px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80"
-                alt="Community member portrait"
+                src="/images/child-portrait.jpg"
+                alt="Indian child with genuine smile"
                 fill
                 className="object-cover"
                 priority
@@ -158,8 +152,8 @@ export default function AboutPage() {
               className="relative h-[400px] lg:h-[450px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80"
-                alt="Community working together"
+                src="/images/empowering-education.jpg"
+                alt="Indian children studying together"
                 fill
                 className="object-cover"
               />
@@ -180,8 +174,8 @@ export default function AboutPage() {
               className="relative h-[450px] lg:h-[550px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80"
-                alt="Team collaboration and values"
+                src="/images/volunteers-community.jpg"
+                alt="Community volunteers collaboration and values"
                 fill
                 className="object-cover"
               />

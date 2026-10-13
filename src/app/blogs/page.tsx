@@ -8,7 +8,7 @@ import AnimatedCard from '@/components/AnimatedCard';
 
 const blogs = [
   {
-    image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80',
+    image: '/images/empowering-education.jpg',
     category: 'Education',
     title: 'How Education Transforms Communities',
     description: 'Discover the powerful impact of education on rural communities and how our programs are creating lasting change.',
@@ -16,7 +16,7 @@ const blogs = [
     slug: 'education-transforms-communities',
   },
   {
-    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80',
+    image: '/images/healthcare-doctor.jpg',
     category: 'Healthcare',
     title: 'Building Healthier Futures Together',
     description: 'Our healthcare initiatives are bringing essential medical services to underserved areas across the region.',
@@ -24,7 +24,7 @@ const blogs = [
     slug: 'building-healthier-futures',
   },
   {
-    image: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800&q=80',
+    image: '/images/volunteers-community.jpg',
     category: 'Community',
     title: 'Stories of Resilience and Hope',
     description: 'Meet the incredible individuals whose lives have been transformed through community support and empowerment.',
@@ -32,7 +32,7 @@ const blogs = [
     slug: 'stories-resilience-hope',
   },
   {
-    image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80',
+    image: '/images/child-education.jpg',
     category: 'Programs',
     title: 'Best Physiotherapists in Rohini',
     description: 'Get expert physiotherapy treatment in Rohini for pain relief, injury recovery, and rehabilitation.',
@@ -40,7 +40,7 @@ const blogs = [
     slug: 'physiotherapists-rohini',
   },
   {
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80',
+    image: '/images/animal-welfare.jpg',
     category: 'Animal Welfare',
     title: 'First Step Toward Animal Welfare',
     description: 'Discover how Saviour Foundation is taking its first step toward animal welfare — rescuing stray & injured animals.',
@@ -48,7 +48,7 @@ const blogs = [
     slug: 'animal-welfare-initiative',
   },
   {
-    image: 'https://images.unsplash.com/photo-1541544537156-7627a7a4aa1c?w=800&q=80',
+    image: '/images/clean-water.jpg',
     category: 'Water & Sanitation',
     title: 'Water Brings Happiness and Prosperity',
     description: 'Clean water means fewer illnesses, better education, and stronger communities. Safe Water, Safe Lives.',

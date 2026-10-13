@@ -27,6 +27,7 @@ export default function StoryCard({ name, image, excerpt, link = '#', index = 0 
           alt={name}
           fill
           className="object-cover"
+          referrerPolicy="no-referrer"
         />
       </div>
       <div className="p-6">

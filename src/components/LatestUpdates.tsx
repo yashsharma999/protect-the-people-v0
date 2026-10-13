@@ -8,20 +8,20 @@ const updates = [
   {
     title: 'Best Physiotherapists in Rohini',
     description: 'Get expert physiotherapy treatment in Rohini for pain relief, injury recovery, and rehabilitation. Certified physiotherapists and home-visit support available.',
-    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop',
-    link: '#',
+    image: '/images/healthcare-doctor.jpg',
+    link: '/blogs/physiotherapists-rohini',
   },
   {
     title: 'First Step Toward Animal Welfare Through Saviour Foundation',
     description: 'Discover how Saviour Foundation is taking its first step toward animal welfare — rescuing stray & injured animals, providing medical care and shelter.',
-    image: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&h=400&fit=crop',
-    link: '#',
+    image: '/images/animal-welfare.jpg',
+    link: '/blogs/animal-welfare-initiative',
   },
   {
     title: 'Water Bring Happiness and Prosperity',
     description: 'Clean water means fewer illnesses, better education, and stronger communities. With your support, Safe Water, Safe Lives.',
-    image: 'https://images.unsplash.com/photo-1541544537156-7627a7a4aa1c?w=600&h=400&fit=crop',
-    link: '#',
+    image: '/images/clean-water.jpg',
+    link: '/blogs/water-happiness-prosperity',
   },
 ];
 

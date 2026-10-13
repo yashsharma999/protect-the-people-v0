@@ -8,32 +8,32 @@ import StoryCard from '@/components/StoryCard';
 const stories = [
   {
     name: 'Debasmita',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&fit=crop',
+    image: '/images/story-debasmita-v2.jpg',
     excerpt: "In the slum where I live, many parents are worried about their children's education. Thanks to PTP Foundation, I now have access to quality education and a brighter future.",
   },
   {
     name: 'Lavanaya',
-    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=800&fit=crop',
+    image: '/images/story-lavanaya-v2.jpg',
     excerpt: 'Some people say I am unlucky. My father went away when I was born, and later my mother died in an accident. But the foundation gave me hope and support.',
   },
   {
     name: 'Neha',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop',
+    image: '/images/beneficiary-neha.jpg',
     excerpt: 'My father used to sell vegetables, but during the pandemic everything closed down. The foundation helped our family get back on our feet.',
   },
   {
     name: 'Priya',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=800&fit=crop',
+    image: '/images/leader-priya.jpg',
     excerpt: 'Education was a distant dream for me until PTP Foundation stepped in. Now I am pursuing my studies and dreaming of becoming a teacher.',
   },
   {
     name: 'Ravi',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop',
+    image: '/images/beneficiary-ravi.jpg',
     excerpt: 'The healthcare camp organized by PTP Foundation saved my mother\'s life. We are forever grateful for their support and care.',
   },
   {
     name: 'Sunita',
-    image: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=600&h=800&fit=crop',
+    image: '/images/beneficiary-sunita.jpg',
     excerpt: 'Through the skill development program, I learned tailoring and now run my own small business. My family\'s life has transformed completely.',
   },
 ];

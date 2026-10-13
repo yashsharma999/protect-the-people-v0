@@ -100,8 +100,8 @@ export default function MapPage() {
             </div>
             <div className="relative h-[400px] rounded-2xl overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=800&q=80"
-                alt="Archive documentation"
+                src="/images/volunteers-community.jpg"
+                alt="Community archive documentation and volunteers"
                 fill
                 className="object-cover"
               />
