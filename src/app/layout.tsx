@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -27,13 +26,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        {/* PhonePe Checkout Script for iframe payment */}
-        <Script
-          src="https://mercury.phonepe.com/web/bundle/checkout.js"
-          strategy="lazyOnload"
-        />
-      </head>
       <body
         className={`${dmSans.variable} antialiased`}
       >

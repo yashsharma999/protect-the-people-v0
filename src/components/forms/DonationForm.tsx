@@ -1,23 +1,66 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, CreditCard, Loader2 } from 'lucide-react';
+import {
+  MIN_DONATION_RUPEES,
+  MAX_DONATION_RUPEES,
+  MAX_NAME_LENGTH,
+  MAX_MESSAGE_LENGTH,
+  MAX_ADDRESS_LENGTH,
+  EMAIL_PATTERN,
+  PHONE_PATTERN,
+  PAN_PATTERN,
+} from '@/lib/donation-rules';
 
-// Declare PhonePe checkout global
+// Razorpay Checkout global (https://checkout.razorpay.com/v1/checkout.js)
+interface RazorpaySuccessResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayFailureResponse {
+  error: {
+    code: string;
+    description: string;
+    reason?: string;
+  };
+}
+
+interface RazorpayCheckoutOptions {
+  key: string;
+  order_id: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description?: string;
+  image?: string;
+  prefill?: { name?: string; email?: string; contact?: string };
+  theme?: { color?: string };
+  handler: (response: RazorpaySuccessResponse) => void;
+  modal?: { ondismiss?: () => void; confirm_close?: boolean };
+}
+
+interface RazorpayCheckout {
+  open: () => void;
+  on: (event: 'payment.failed', callback: (response: RazorpayFailureResponse) => void) => void;
+}
+
 declare global {
   interface Window {
-    PhonePeCheckout?: {
-      transact: (options: {
-        tokenUrl: string;
-        callback: (response: string) => void;
-        type: 'IFRAME' | 'REDIRECT';
-      }) => void;
-      closePage: () => void;
-    };
+    Razorpay?: new (options: RazorpayCheckoutOptions) => RazorpayCheckout;
   }
+}
+
+interface CreateOrderResult {
+  keyId: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  receipt: string;
 }
 
 interface DonationFormData {
@@ -26,8 +69,10 @@ interface DonationFormData {
   phone?: string;
   amount: string;
   customAmount?: string;
-  donationType: 'one-time' | 'monthly';
   message?: string;
+  wants80G: boolean;
+  pan?: string;
+  address?: string;
 }
 
 type PaymentState =
@@ -39,193 +84,200 @@ type PaymentState =
   | 'failed'
   | 'cancelled';
 
+const CHECKOUT_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js';
+
+let checkoutScriptPromise: Promise<void> | null = null;
+
+function loadCheckoutScript(): Promise<void> {
+  if (window.Razorpay) return Promise.resolve();
+
+  if (!checkoutScriptPromise) {
+    checkoutScriptPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = CHECKOUT_SCRIPT_URL;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => {
+        checkoutScriptPromise = null;
+        script.remove();
+        reject(new Error('Could not load the payment window. Please check your connection and try again.'));
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  return checkoutScriptPromise;
+}
+
 const donationAmounts = ['500', '1000', '2500', '5000', '10000'];
 
 const donationReasons = [
   'Transparent fund utilization',
   'Secure donation process',
-  'Tax benefits as applicable',
+  '80G tax receipt on request',
 ];
 
-export default function DonationForm() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+const inputClassName =
+  'w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#222120]/20 focus:border-[#222120] transition-all disabled:opacity-50 disabled:cursor-not-allowed';
 
+export default function DonationForm() {
   const [paymentState, setPaymentState] = useState<PaymentState>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [transactionId, setTransactionId] = useState<string>('');
+  const [receiptNumber, setReceiptNumber] = useState<string>('');
   const [paidAmount, setPaidAmount] = useState<number>(0);
+  const [donorInfo, setDonorInfo] = useState<{ fullName: string; email: string; wants80G: boolean } | null>(null);
 
-  // Store donor info for verification
-  const [donorInfo, setDonorInfo] = useState<{
-    fullName: string;
-    email: string;
-    phone?: string;
-    message?: string;
-  } | null>(null);
-
-  // Store order ID for verification
-  const [merchantOrderId, setMerchantOrderId] = useState<string>('');
+  // Checkout can call ondismiss after a successful payment closes the window
+  const paymentCompletedRef = useRef(false);
+  // Checkout lets the donor retry inside the window after a failure; remember why the last attempt failed
+  const lastFailureRef = useRef<string>('');
 
   const {
     register,
     handleSubmit,
     watch,
-    getValues,
     formState: { errors },
   } = useForm<DonationFormData>({
     defaultValues: {
-      donationType: 'one-time',
       amount: '1000',
+      wants80G: false,
     },
   });
 
   const selectedAmount = watch('amount');
+  const customAmount = watch('customAmount');
+  const wants80G = watch('wants80G');
 
-  // Handle payment callback from URL (redirect mode fallback)
+  // Start loading Checkout early so the payment window opens without delay
   useEffect(() => {
-    const paymentCallback = searchParams.get('payment');
-    const orderId = searchParams.get('orderId');
+    loadCheckoutScript().catch(() => {
+      // Retried when the donor submits the form
+    });
+  }, []);
 
-    if (paymentCallback === 'callback' && orderId) {
-      // Clear URL params
-      router.replace('/how-to-help#donate', { scroll: false });
+  const verifyPayment = async (order: CreateOrderResult, response: RazorpaySuccessResponse) => {
+    paymentCompletedRef.current = true;
+    setPaymentState('verifying');
 
-      // Verify payment status
-      setMerchantOrderId(orderId);
-      setPaymentState('verifying');
-
-      // Try to get stored donor info from sessionStorage
-      const storedDonorInfo = sessionStorage.getItem('donorInfo');
-      if (storedDonorInfo) {
-        setDonorInfo(JSON.parse(storedDonorInfo));
-      }
-    }
-  }, [searchParams, router]);
-
-  // Verify payment when in verifying state
-  useEffect(() => {
-    if (paymentState === 'verifying' && merchantOrderId) {
-      verifyPayment();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentState, merchantOrderId]);
-
-  const verifyPayment = useCallback(async () => {
     try {
-      const response = await fetch('/api/phonepe/verify', {
+      const res = await fetch('/api/razorpay/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          merchantOrderId,
-          donorInfo: donorInfo || {
-            fullName: 'Anonymous',
-            email: 'unknown@example.com',
-          },
+          orderId: order.orderId,
+          paymentId: response.razorpay_payment_id,
+          signature: response.razorpay_signature,
         }),
       });
 
-      const result = await response.json();
+      const result = await res.json();
 
-      if (result.success && result.status === 'COMPLETED') {
-        setTransactionId(result.transactionId);
+      if (res.ok && result.success) {
+        setTransactionId(result.paymentId);
         setPaidAmount(result.amount);
+        setReceiptNumber(order.receipt);
         setPaymentState('success');
-        sessionStorage.removeItem('donorInfo');
-      } else if (result.status === 'PENDING') {
-        // Still pending, retry after delay
-        setTimeout(verifyPayment, 3000);
       } else {
-        setErrorMessage(result.message || 'Payment verification failed');
+        setErrorMessage(result.error || 'Payment verification failed');
         setPaymentState('failed');
       }
     } catch {
-      setErrorMessage('Could not verify payment status. Please contact support.');
+      setErrorMessage(
+        `We could not confirm your payment. If money was deducted, you will receive a receipt by email shortly, so please don't pay again. Reference: ${response.razorpay_payment_id}`
+      );
       setPaymentState('failed');
     }
-  }, [merchantOrderId, donorInfo]);
-
-  const handlePhonePeCallback = useCallback((response: string) => {
-    console.log('PhonePe callback response:', response);
-
-    if (response === 'CONCLUDED') {
-      // Payment flow concluded (success or failure) - verify status
-      setPaymentState('verifying');
-    } else if (response === 'USER_CANCEL') {
-      // User cancelled the payment
-      setPaymentState('cancelled');
-      setErrorMessage('Payment was cancelled. You can try again.');
-    } else {
-      // Unknown response
-      setPaymentState('failed');
-      setErrorMessage('Payment could not be completed. Please try again.');
-    }
-  }, []);
+  };
 
   const initiatePayment = async (data: DonationFormData) => {
     setErrorMessage('');
     setPaymentState('creating_order');
+    paymentCompletedRef.current = false;
+    lastFailureRef.current = '';
 
     // Calculate final amount
     const amount = data.amount === 'custom'
-      ? parseInt(data.customAmount || '0')
-      : parseInt(data.amount);
+      ? Number(data.customAmount)
+      : Number(data.amount);
 
-    if (!amount || amount < 1) {
+    if (!Number.isInteger(amount) || amount < MIN_DONATION_RUPEES || amount > MAX_DONATION_RUPEES) {
       setErrorMessage('Please enter a valid donation amount');
       setPaymentState('idle');
       return;
     }
 
-    // Store donor info
-    const donor = {
-      fullName: data.fullName,
-      email: data.email,
-      phone: data.phone,
-      message: data.message,
-    };
-    setDonorInfo(donor);
-
-    // Store in sessionStorage for redirect fallback
-    sessionStorage.setItem('donorInfo', JSON.stringify(donor));
+    setDonorInfo({ fullName: data.fullName, email: data.email, wants80G: data.wants80G });
 
     try {
-      // Create order on server
-      const response = await fetch('/api/phonepe/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount,
-          fullName: data.fullName,
-          email: data.email,
-          phone: data.phone,
-          message: data.message,
-        }),
-      });
+      // Create order on server while Checkout finishes loading
+      const [order] = await Promise.all([
+        (async (): Promise<CreateOrderResult> => {
+          const response = await fetch('/api/razorpay/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount,
+              fullName: data.fullName,
+              email: data.email,
+              phone: data.phone,
+              message: data.message,
+              wants80G: data.wants80G,
+              pan: data.wants80G ? data.pan : undefined,
+              address: data.wants80G ? data.address : undefined,
+            }),
+          });
 
-      const result = await response.json();
+          const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to create payment order');
+          if (!response.ok) {
+            throw new Error(result.error || 'Failed to create payment order');
+          }
+
+          return result;
+        })(),
+        loadCheckoutScript(),
+      ]);
+
+      if (!window.Razorpay) {
+        throw new Error('Could not load the payment window. Please try again.');
       }
 
-      // Store merchant order ID for verification
-      setMerchantOrderId(result.merchantOrderId);
       setPaymentState('payment_pending');
 
-      // Check if PhonePe checkout is available
-      if (!window.PhonePeCheckout) {
-        // Fallback: redirect directly
-        window.location.href = result.redirectUrl;
-        return;
-      }
-
-      // Open PhonePe PayPage in iframe
-      window.PhonePeCheckout.transact({
-        tokenUrl: result.redirectUrl,
-        callback: handlePhonePeCallback,
-        type: 'IFRAME',
+      const checkout = new window.Razorpay({
+        key: order.keyId,
+        order_id: order.orderId,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Protect The People Foundation',
+        description: 'Donation',
+        image: `${window.location.origin}/logo.png`,
+        prefill: {
+          name: data.fullName,
+          email: data.email,
+          contact: data.phone || undefined,
+        },
+        theme: { color: '#222120' },
+        handler: (response) => verifyPayment(order, response),
+        modal: {
+          ondismiss: () => {
+            if (paymentCompletedRef.current) return;
+            setPaymentState('cancelled');
+            setErrorMessage(
+              lastFailureRef.current
+                ? `Your last payment attempt failed (${lastFailureRef.current}). You can try again.`
+                : 'Payment was cancelled. You can try again.'
+            );
+          },
+        },
       });
+
+      checkout.on('payment.failed', (response) => {
+        lastFailureRef.current = response.error.description;
+      });
+
+      checkout.open();
 
     } catch (error) {
       console.error('Payment initiation error:', error);
@@ -256,11 +308,15 @@ export default function DonationForm() {
           <p className="text-secondary mb-2">
             Thank you for your generous donation, <span className="font-semibold text-primary">{donorInfo?.fullName}</span>!
           </p>
+          <p className="text-sm text-secondary">
+            Receipt No: <span className="font-mono">{receiptNumber}</span>
+          </p>
           <p className="text-sm text-secondary mb-6">
             Transaction ID: <span className="font-mono">{transactionId}</span>
           </p>
           <p className="text-secondary">
-            A confirmation email has been sent to <span className="font-medium text-primary">{donorInfo?.email}</span>
+            {donorInfo?.wants80G ? 'Your 80G donation receipt' : 'Your donation receipt'} will be emailed to{' '}
+            <span className="font-medium text-primary">{donorInfo?.email}</span> shortly.
           </p>
         </motion.div>
       </div>
@@ -314,6 +370,8 @@ export default function DonationForm() {
   // Processing state (creating order or waiting for payment)
   const isProcessing = paymentState === 'creating_order' || paymentState === 'payment_pending';
 
+  const summaryAmount = Number(selectedAmount === 'custom' ? customAmount : selectedAmount) || 0;
+
   return (
     <div>
       <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Donate</h2>
@@ -346,32 +404,6 @@ export default function DonationForm() {
           </div>
         )}
 
-        {/* Donation Type */}
-        <div>
-          <label className="block text-sm font-medium text-primary mb-3">Donation Type</label>
-          <div className="flex gap-3">
-            <label className="flex-1">
-              <input
-                type="radio"
-                value="one-time"
-                {...register('donationType')}
-                className="peer sr-only"
-              />
-              <div className="p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer transition-all peer-checked:border-[#222120] peer-checked:bg-[#222120]/5 hover:border-gray-300">
-                <span className="font-medium text-primary">One-time</span>
-              </div>
-            </label>
-            <div className="flex-1 relative">
-              <div className="p-3 border-2 border-gray-100 rounded-xl text-center bg-gray-50 cursor-not-allowed opacity-60">
-                <span className="font-medium text-gray-400">Monthly</span>
-              </div>
-              <span className="absolute -top-2 -right-2 bg-amber-100 text-amber-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                Coming Soon
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Donation Amount */}
         <div>
           <label className="block text-sm font-medium text-primary mb-3">Select Amount (₹)</label>
@@ -386,7 +418,7 @@ export default function DonationForm() {
                   disabled={isProcessing}
                 />
                 <div className="p-3 border-2 border-gray-200 rounded-xl text-center cursor-pointer transition-all peer-checked:border-[#222120] peer-checked:bg-[#222120] peer-checked:text-white hover:border-gray-300 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
-                  <span className="font-semibold">₹{parseInt(amount).toLocaleString()}</span>
+                  <span className="font-semibold">₹{parseInt(amount).toLocaleString('en-IN')}</span>
                 </div>
               </label>
             ))}
@@ -407,13 +439,16 @@ export default function DonationForm() {
             <div className="mt-3">
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="Enter custom amount"
                 {...register('customAmount', {
                   required: selectedAmount === 'custom' ? 'Please enter an amount' : false,
-                  min: { value: 100, message: 'Minimum donation is ₹100' },
+                  min: { value: MIN_DONATION_RUPEES, message: `Minimum donation is ₹${MIN_DONATION_RUPEES}` },
+                  max: { value: MAX_DONATION_RUPEES, message: `Maximum online donation is ₹${MAX_DONATION_RUPEES.toLocaleString('en-IN')}` },
+                  validate: (value) => !value || Number.isInteger(Number(value)) || 'Please enter a whole rupee amount',
                 })}
                 disabled={isProcessing}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#222120]/20 focus:border-[#222120] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className={inputClassName}
               />
               {errors.customAmount && (
                 <p className="text-red-500 text-sm mt-1">{errors.customAmount.message}</p>
@@ -430,9 +465,12 @@ export default function DonationForm() {
             <label className="block text-sm font-medium text-primary mb-1">Full Name *</label>
             <input
               type="text"
-              {...register('fullName', { required: 'Full name is required' })}
+              {...register('fullName', {
+                required: 'Full name is required',
+                maxLength: { value: MAX_NAME_LENGTH, message: `Name must be ${MAX_NAME_LENGTH} characters or fewer` },
+              })}
               disabled={isProcessing}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#222120]/20 focus:border-[#222120] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className={inputClassName}
               placeholder="Enter your full name"
             />
             {errors.fullName && (
@@ -447,12 +485,12 @@ export default function DonationForm() {
               {...register('email', {
                 required: 'Email is required',
                 pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  value: EMAIL_PATTERN,
                   message: 'Invalid email address',
                 },
               })}
               disabled={isProcessing}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#222120]/20 focus:border-[#222120] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className={inputClassName}
               placeholder="Enter your email"
             />
             {errors.email && (
@@ -464,24 +502,92 @@ export default function DonationForm() {
             <label className="block text-sm font-medium text-primary mb-1">Phone Number (Optional)</label>
             <input
               type="tel"
-              {...register('phone')}
+              {...register('phone', {
+                pattern: { value: PHONE_PATTERN, message: 'Invalid phone number' },
+              })}
               disabled={isProcessing}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#222120]/20 focus:border-[#222120] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className={inputClassName}
               placeholder="Enter your phone number"
             />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+            )}
           </div>
+        </div>
+
+        {/* 80G Tax Receipt */}
+        <div className="space-y-4">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              {...register('wants80G')}
+              disabled={isProcessing}
+              className="mt-1 w-4 h-4 accent-[#222120]"
+            />
+            <span>
+              <span className="block text-sm font-medium text-primary">I want an 80G tax receipt</span>
+              <span className="block text-sm text-secondary">
+                Claim a tax deduction under Section 80G. Your PAN and address are required by the Income Tax Department.
+              </span>
+            </span>
+          </label>
+
+          {wants80G && (
+            <div className="space-y-4 pl-7">
+              <div>
+                <label className="block text-sm font-medium text-primary mb-1">PAN *</label>
+                <input
+                  type="text"
+                  {...register('pan', {
+                    required: wants80G ? 'PAN is required for an 80G receipt' : false,
+                    setValueAs: (value: string) => value?.trim().toUpperCase(),
+                    pattern: { value: PAN_PATTERN, message: 'Enter a valid PAN, e.g. ABCDE1234F' },
+                  })}
+                  disabled={isProcessing}
+                  maxLength={10}
+                  className={`${inputClassName} uppercase`}
+                  placeholder="ABCDE1234F"
+                />
+                {errors.pan && (
+                  <p className="text-red-500 text-sm mt-1">{errors.pan.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-primary mb-1">Address *</label>
+                <textarea
+                  {...register('address', {
+                    required: wants80G ? 'Address is required for an 80G receipt' : false,
+                    maxLength: { value: MAX_ADDRESS_LENGTH, message: `Address must be ${MAX_ADDRESS_LENGTH} characters or fewer` },
+                  })}
+                  rows={2}
+                  disabled={isProcessing}
+                  className={`${inputClassName} resize-none`}
+                  placeholder="House no., street, city, state, PIN code"
+                />
+                {errors.address && (
+                  <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Message */}
         <div>
           <label className="block text-sm font-medium text-primary mb-1">Message (Optional)</label>
           <textarea
-            {...register('message')}
+            {...register('message', {
+              maxLength: { value: MAX_MESSAGE_LENGTH, message: `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer` },
+            })}
             rows={3}
             disabled={isProcessing}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#222120]/20 focus:border-[#222120] transition-all resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${inputClassName} resize-none`}
             placeholder="Leave a message or note with your donation"
           />
+          {errors.message && (
+            <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>
+          )}
         </div>
 
         {/* Amount Summary */}
@@ -489,10 +595,7 @@ export default function DonationForm() {
           <div className="flex justify-between items-center">
             <span className="text-secondary">Donation Amount</span>
             <span className="text-2xl font-bold text-primary">
-              ₹{(selectedAmount === 'custom'
-                ? parseInt(getValues('customAmount') || '0')
-                : parseInt(selectedAmount || '0')
-              ).toLocaleString('en-IN')}
+              ₹{summaryAmount.toLocaleString('en-IN')}
             </span>
           </div>
         </div>
@@ -518,7 +621,7 @@ export default function DonationForm() {
 
         <div className="text-center space-y-2">
           <p className="text-sm text-secondary">
-            Secure payment powered by PhonePe
+            Secure payment powered by Razorpay · UPI, cards, net banking &amp; wallets
           </p>
         </div>
       </form>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { organization } from '@/data/organization';
 
 export default function TaxInfoPage() {
   return (
@@ -45,7 +46,7 @@ export default function TaxInfoPage() {
             <div className="prose prose-lg max-w-none text-secondary">
               <h2 className="text-2xl font-semibold text-primary mb-4">About 80G Tax Exemption</h2>
               <p className="mb-6">
-                PTP Foundation is registered under Section 80G of the Income Tax Act, 1961.
+                {organization.name} is registered under Section 80G of the Income Tax Act, 1961.
                 This means that all donations made to our organization are eligible for tax
                 deduction under Indian tax laws.
               </p>
@@ -55,19 +56,23 @@ export default function TaxInfoPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-secondary">Organization Name</p>
-                    <p className="font-semibold text-primary">PTP Foundation</p>
+                    <p className="font-semibold text-primary">{organization.legalName}</p>
                   </div>
                   <div>
                     <p className="text-sm text-secondary">Registration Number</p>
-                    <p className="font-semibold text-primary">XXXXXXX</p>
+                    <p className="font-semibold text-primary">{organization.registrationNumber}</p>
                   </div>
                   <div>
                     <p className="text-sm text-secondary">80G Registration</p>
-                    <p className="font-semibold text-primary">80G/XXXXX/XXXXX</p>
+                    <p className="font-semibold text-primary">{organization.section80G.registrationNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-secondary">80G Validity</p>
+                    <p className="font-semibold text-primary">{organization.section80G.validity}</p>
                   </div>
                   <div>
                     <p className="text-sm text-secondary">PAN Number</p>
-                    <p className="font-semibold text-primary">XXXXXXXXXX</p>
+                    <p className="font-semibold text-primary">{organization.pan}</p>
                   </div>
                 </div>
               </div>
@@ -75,15 +80,16 @@ export default function TaxInfoPage() {
               <h2 className="text-2xl font-semibold text-primary mb-4">Tax Benefits</h2>
               <p className="mb-4">Donors can claim the following tax benefits:</p>
               <ul className="list-disc pl-6 mb-6 space-y-2">
-                <li>50% of the donation amount is deductible from taxable income</li>
+                <li>{organization.section80G.deductiblePercent}% of the donation amount is deductible from taxable income</li>
                 <li>Applicable to both individual and corporate donors</li>
                 <li>Valid for donations made through any payment method (online, cheque, bank transfer)</li>
               </ul>
 
               <h2 className="text-2xl font-semibold text-primary mb-4">How to Claim Tax Deduction</h2>
               <ol className="list-decimal pl-6 mb-6 space-y-2">
-                <li>Make a donation to PTP Foundation</li>
-                <li>Receive your donation receipt with 80G certificate details</li>
+                <li>Donate online and tick &ldquo;I want an 80G tax receipt&rdquo;, entering your PAN and address</li>
+                <li>Receive your donation receipt with 80G details by email</li>
+                <li>Receive your Form 10BE certificate after we file Form 10BD, by 31 May following the financial year</li>
                 <li>Include the donation amount in your tax return under Section 80G</li>
                 <li>Attach the donation receipt as proof when filing</li>
               </ol>
@@ -97,15 +103,16 @@ export default function TaxInfoPage() {
 
               <h2 className="text-2xl font-semibold text-primary mb-4">Need a Donation Receipt?</h2>
               <p className="mb-6">
-                If you have made a donation and need a receipt or 80G certificate, please
-                contact us with your donation details.
+                Online donations receive a receipt by email immediately. If you did not request
+                an 80G receipt when donating, reply to your receipt email with your PAN and address
+                within the same financial year, or contact us with your donation details.
               </p>
 
               <h2 className="text-2xl font-semibold text-primary mb-4">Contact Us</h2>
               <p>
                 For any queries regarding tax exemption or registration, please contact us at:{' '}
-                <a href="mailto:info@cdu.org" className="text-accent hover:underline">
-                  info@cdu.org
+                <a href={`mailto:${organization.email}`} className="text-accent hover:underline">
+                  {organization.email}
                 </a>
               </p>
             </div>
