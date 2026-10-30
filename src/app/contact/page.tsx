@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
+import { organization } from '@/data/organization';
 
 interface ContactFormData {
   name: string;
@@ -266,7 +267,7 @@ export default function ContactPage() {
               },
               {
                 question: 'Is my donation tax-deductible?',
-                answer: 'Yes, we are a registered 501(c)(3) nonprofit organization. All donations are tax-deductible to the extent allowed by law.',
+                answer: `Yes, we are registered under Section 80G of the Income Tax Act, 1961, so ${organization.section80G.deductiblePercent}% of your donation is deductible from your taxable income. Tick "I want an 80G tax receipt" and enter your PAN when you donate to receive your receipt by email.`,
               },
               {
                 question: 'How can my company partner with you?',
