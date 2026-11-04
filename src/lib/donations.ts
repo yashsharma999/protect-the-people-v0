@@ -113,20 +113,14 @@ async function sendDonationEmails(donation: Donation) {
 }
 
 /**
- * Record a captured donation exactly once per payment.
- * Throws if the sheet cannot be written, so the webhook can ask Razorpay to retry.
+ * Append the donation to the Donations sheet unless this payment is already there.
  */
-export async function recordDonation(donation: Donation): Promise<'recorded' | 'duplicate'> {
-  if (donation.donor.wants80G && hasPlaceholderTaxDetails()) {
-    console.warn('⚠️ 80G receipt requested but src/data/organization.ts still has placeholder tax details');
-  }
-
+async function saveDonationRow(donation: Donation): Promise<'saved' | 'duplicate' | 'not_configured'> {
   const sheet = await getDonationsSheet();
 
   if (sheet) {
     const rows = await sheet.getRows();
     if (rows.some((row) => row.get('Transaction ID') === donation.paymentId)) {
-      console.log('ℹ️ Donation already recorded:', donation.paymentId);
       return 'duplicate';
     }
 
@@ -152,8 +146,36 @@ export async function recordDonation(donation: Donation): Promise<'recorded' | '
       { raw: true }
     );
     console.log('✅ Donation saved to Google Sheets');
-  } else {
-    console.warn('⚠️ Google Sheets not configured - donation not saved:', donation.paymentId);
+    return 'saved';
+  }
+
+  console.warn('⚠️ Google Sheets not configured - donation not saved:', donation.paymentId);
+  return 'not_configured';
+}
+
+/**
+ * Record a captured donation exactly once per payment.
+ * Receipts are emailed even when Google Sheets fails; the error is then rethrown
+ * so the webhook asks Razorpay to retry the sheet row, and Resend idempotency
+ * keys stop the retry from emailing the donor twice.
+ */
+export async function recordDonation(donation: Donation): Promise<'recorded' | 'duplicate'> {
+  if (donation.donor.wants80G && hasPlaceholderTaxDetails()) {
+    console.warn('⚠️ 80G receipt requested but src/data/organization.ts still has placeholder tax details');
+  }
+
+  let saved: Awaited<ReturnType<typeof saveDonationRow>>;
+  try {
+    saved = await saveDonationRow(donation);
+  } catch (sheetError) {
+    console.error('❌ Google Sheets error:', sheetError instanceof Error ? sheetError.message : sheetError);
+    await sendDonationEmails(donation);
+    throw sheetError;
+  }
+
+  if (saved === 'duplicate') {
+    console.log('ℹ️ Donation already recorded:', donation.paymentId);
+    return 'duplicate';
   }
 
   await sendDonationEmails(donation);
