@@ -3,7 +3,7 @@
 // than once, so every step is safe to repeat for the same payment.
 
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
-import { JWT } from 'google-auth-library';
+import { getServiceAccountAuth } from '@/lib/google-auth';
 import { Resend } from 'resend';
 import { hasPlaceholderTaxDetails } from '@/data/organization';
 import { Donation, adminNotificationEmail, donorReceiptEmail, formatIndianDateTime } from '@/lib/donation-emails';
@@ -13,14 +13,6 @@ export type { Donation } from '@/lib/donation-emails';
 // Lazy initialization to avoid build errors when env vars are not set
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
-}
-
-function getServiceAccountAuth() {
-  return new JWT({
-    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
 }
 
 const DONATIONS_SHEET = 'Donations';

@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import { JWT } from 'google-auth-library';
+import { getServiceAccountAuth } from '@/lib/google-auth';
 import { Resend } from 'resend';
 
 // Lazy initialization to avoid build errors when env vars are not set
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
-}
-
-function getServiceAccountAuth() {
-  return new JWT({
-    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
 }
 
 interface VolunteerData {
