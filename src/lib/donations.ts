@@ -3,7 +3,7 @@
 // than once, so every step is safe to repeat for the same payment.
 
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
-import { JWT } from 'google-auth-library';
+import { getServiceAccountAuth } from '@/lib/google-auth';
 import { Resend } from 'resend';
 import { hasPlaceholderTaxDetails } from '@/data/organization';
 import { Donation, adminNotificationEmail, donorReceiptEmail, formatIndianDateTime } from '@/lib/donation-emails';
@@ -13,14 +13,6 @@ export type { Donation } from '@/lib/donation-emails';
 // Lazy initialization to avoid build errors when env vars are not set
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
-}
-
-function getServiceAccountAuth() {
-  return new JWT({
-    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
 }
 
 const DONATIONS_SHEET = 'Donations';
@@ -113,20 +105,14 @@ async function sendDonationEmails(donation: Donation) {
 }
 
 /**
- * Record a captured donation exactly once per payment.
- * Throws if the sheet cannot be written, so the webhook can ask Razorpay to retry.
+ * Append the donation to the Donations sheet unless this payment is already there.
  */
-export async function recordDonation(donation: Donation): Promise<'recorded' | 'duplicate'> {
-  if (donation.donor.wants80G && hasPlaceholderTaxDetails()) {
-    console.warn('⚠️ 80G receipt requested but src/data/organization.ts still has placeholder tax details');
-  }
-
+async function saveDonationRow(donation: Donation): Promise<'saved' | 'duplicate' | 'not_configured'> {
   const sheet = await getDonationsSheet();
 
   if (sheet) {
     const rows = await sheet.getRows();
     if (rows.some((row) => row.get('Transaction ID') === donation.paymentId)) {
-      console.log('ℹ️ Donation already recorded:', donation.paymentId);
       return 'duplicate';
     }
 
@@ -152,8 +138,36 @@ export async function recordDonation(donation: Donation): Promise<'recorded' | '
       { raw: true }
     );
     console.log('✅ Donation saved to Google Sheets');
-  } else {
-    console.warn('⚠️ Google Sheets not configured - donation not saved:', donation.paymentId);
+    return 'saved';
+  }
+
+  console.warn('⚠️ Google Sheets not configured - donation not saved:', donation.paymentId);
+  return 'not_configured';
+}
+
+/**
+ * Record a captured donation exactly once per payment.
+ * Receipts are emailed even when Google Sheets fails; the error is then rethrown
+ * so the webhook asks Razorpay to retry the sheet row, and Resend idempotency
+ * keys stop the retry from emailing the donor twice.
+ */
+export async function recordDonation(donation: Donation): Promise<'recorded' | 'duplicate'> {
+  if (donation.donor.wants80G && hasPlaceholderTaxDetails()) {
+    console.warn('⚠️ 80G receipt requested but src/data/organization.ts still has placeholder tax details');
+  }
+
+  let saved: Awaited<ReturnType<typeof saveDonationRow>>;
+  try {
+    saved = await saveDonationRow(donation);
+  } catch (sheetError) {
+    console.error('❌ Google Sheets error:', sheetError instanceof Error ? sheetError.message : sheetError);
+    await sendDonationEmails(donation);
+    throw sheetError;
+  }
+
+  if (saved === 'duplicate') {
+    console.log('ℹ️ Donation already recorded:', donation.paymentId);
+    return 'duplicate';
   }
 
   await sendDonationEmails(donation);
